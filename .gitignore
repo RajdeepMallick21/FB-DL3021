@@ -1,0 +1,5 @@
+*.pyc
+conv.csv
+Main\ current*
+Main\ power*
+.venv
