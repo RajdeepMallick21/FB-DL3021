@@ -11,7 +11,6 @@ class DL3021:
                 self.DL3KOBJ = DL3000(res)
                 self.modeVals = []
                 self.timeVals = []
-                self.timeValsInterval = 0
                 self.sendInterval = 0
 
                 match mode_set:
@@ -37,7 +36,8 @@ class DL3021:
                                 self.timeVals.append(float(row[0]))
                                 self.modeVals.append(round(abs(float(row[1])), 3))
                 
-                self.timeValsInterval = self.timeVals[1] - self.timeVals[0]
+                self.sendInterval = self.timeVals[1] - self.timeVals[0]
+                print(f"Send Interval: {self.sendInterval}")
                 # self.sendInterval = self.timeVals[1] - self.timeVals[0]
                 # print(f"Calculated send interval: {self.sendInterval}")
                 # print(f"Difference between max and min current values{abs(max(self.modeVals)) - abs(min(self.modeVals))}")
@@ -47,18 +47,13 @@ class DL3021:
                 # plt.show()
                 print("Done Reading")
 
-        def loadSndSqnce(self, mode, interval):
-                self.sendInterval = interval
-                modeValsInterval = int(self.sendInterval / self.timeValsInterval)
-
+        def loadSndSqnce(self, mode):
                 self.DL3KOBJ.enable()
                         
                 if mode == "CURRENT":
-                        for i in range(0, len(self.modeVals), modeValsInterval):
-                                if i % modeValsInterval == 0:
-                                        self.DL3KOBJ.set_cc_current(current=self.modeVals[i])
-                                        print(f"At {i}, {self.modeVals[i]}")
-                                        time.sleep(self.sendInterval)
+                        for val in self.modeVals:
+                                self.DL3KOBJ.set_cc_current(current=val)
+                                time.sleep(self.sendInterval)
                 elif mode == "POWER":
                         for val in self.modeVals:
                                 self.DL3KOBJ.set_cp_power(val)
@@ -88,14 +83,15 @@ if __name__=="__main__":
                             slew_rate=slewRate,
                             range_val=rangeVal)
 
-        filename = "Main current - Ace.csv"
+        filename = "conv.csv"
         DL3021load.fileRead(filename=filename)
 
         try:
-                while True:
-                        print("Attempting Send Sequence")
-                        DL3021load.loadSndSqnce(modeSet, 
-                                                interval= (10*(20 / 1000000)))
+                print("Attempting Send Sequence")
+                DL3021load.loadSndSqnce(modeSet)
+                # while True:
+                #         print("Attempting Send Sequence")
+                #         DL3021load.loadSndSqnce(modeSet)
                 
 
         except KeyboardInterrupt:
