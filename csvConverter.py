@@ -20,16 +20,12 @@ class csvConverter():
                 tempModeVal = 0
                 
                 for i in range(len(self.modeVals)):
-                        # print(i)
-                        # print("Adding Mode Values in Temp")
                         tempModeVal += self.modeVals[i]
 
                         if (i % self.samplesToAvg == 0):
                                 self.newTimeVals.append(self.timeVals[i])
-                                # print("Storing Time Value")
 
                         if (i % self.samplesToAvg == self.samplesToAvg - 1):
-                                # print("Stopping and Taking Average")
                                 tempModeVal /= self.samplesToAvg
                                 self.newModeVals.append(tempModeVal)
                                 tempModeVal = 0
